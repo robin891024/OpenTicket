@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import Top from '../components/ui/Top';
 
 const events = [
     {
@@ -269,6 +270,7 @@ export default function Shows() {
                     </div>
                 )}
             </main>
+            <Top />
             <Footer />
         </div>
     );

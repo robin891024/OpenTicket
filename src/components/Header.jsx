@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'; // 確保導入 Link
+import { Link } from 'react-router-dom'; 
 import { Button } from "@/components/ui/button";
 import { Search } from 'lucide-react';
 
@@ -28,10 +28,8 @@ function Header({ showSearchBar = false }) {
                     )}
           </div>
 
-        {/* Shows 連結到 /shows 頁面 (假設) */}
         <Link to="/shows" className="hover:underline">活動資訊</Link>
         
-        {/* News 連結到 /news 頁面 (您已在 App.jsx 中設定) */}
         <Link to="/news" className="hover:underline">最新消息</Link>
       </div>
 
@@ -42,7 +40,6 @@ function Header({ showSearchBar = false }) {
         
         {/* Sign in 按鈕 (通常也連結到 /login) */}
         <Button variant="secondary" className="ml-2">
-          {/* 由於 Button 通常是 HTML button，其點擊事件需要額外處理跳轉 */}
           <Link to="/login" className="text-text">登入/註冊</Link>
         </Button>
       </div>

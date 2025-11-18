@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import EventCarousel from "./EventCarousel"; 
+import { Link } from 'react-router-dom';
 
 function EventSection() {
   const events = [
@@ -71,7 +72,9 @@ function EventSection() {
         />
       </div>
       
-      <Button variant="outline" className="mt-6">顯示更多</Button>
+      <Button variant="outline" className="mt-6">
+        <Link to="/shows">顯示更多</Link>
+      </Button>
     </section>
   );
 }
