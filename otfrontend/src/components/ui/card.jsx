@@ -1,5 +1,5 @@
-export function Card({ children, className = '' }) {
-  return <div className={`rounded-lg overflow-hidden ${className}`}>{children}</div>;
+export function Card({ children, className = '', ...props }) {
+  return <div className={`rounded-lg overflow-hidden ${className}`} {...props}>{children}</div>;
 }
 
 export function CardContent({ children, className = '' }) {
