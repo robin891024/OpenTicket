@@ -26,15 +26,6 @@ const FormPage = () => {
     // 在這裡處理表單提交邏輯
   };
 
-const renderTextInput = (label, infoText, placeholder = "", required = false) => (
-    <InputGroup label={label} infoText={infoText} required={required}>
-      <input
-        type="text"
-        placeholder={placeholder}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-      />
-    </InputGroup>
-  );
 
   return (
     <>
@@ -51,15 +42,12 @@ const renderTextInput = (label, infoText, placeholder = "", required = false) =>
           />
         </InputGroup>
 
-        {/* 訂單名稱 (選擇欄位) */}
         <InputGroup label="活動名稱" required>
           <input
             type="text"
+            placeholder="若無特定活動，請填寫無"
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
-          <p className="mt-1 text-sm text-gray-500">
-            若無特定活動，請填寫無。
-          </p>
         </InputGroup>
 
         {/* 訂單日期 */}
@@ -74,10 +62,13 @@ const renderTextInput = (label, infoText, placeholder = "", required = false) =>
         </InputGroup>
 
         {/* 訂單編號 */}
-        {renderTextInput(
-          "訂單編號",
-          "訂單編號可於【訂單查詢】中查看，若無訂單，請填寫無。"
-        )}
+        <InputGroup label="訂單編號">
+          <input
+            type="text"
+            placeholder="訂單編號可於【訂單查詢】中查看，若無訂單，請填寫無。"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </InputGroup>
 
         {/* 訂單會員姓名 */}
         <InputGroup label="電子郵件地址">
