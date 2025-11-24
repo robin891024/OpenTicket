@@ -25,5 +25,3 @@ Thumbs.db
 *.cache
 .parcel-cache/
 .turbo/
-
-/otbackend/
