@@ -67,7 +67,6 @@ function Hero() {
         const fetchImages = async () => {
             try {
                 const response = await fetch(REMOTE_API_ENDPOINT); 
-                // ... (省略錯誤處理邏輯)
                 const data = await response.json();
                 const urlsWithBase = data.map(relativeUrl => REMOTE_API_BASE_URL + relativeUrl);
                 
@@ -82,7 +81,7 @@ function Hero() {
         fetchImages();
     }, []);
 
-    // --- 輪播邏輯 (修正 useCallback 依賴 imagesCount) ---
+    // --- 輪播邏輯---
     const goToSlide = useCallback((index) => {
         let newIndex = index;
         if (newIndex >= imagesCount) {
@@ -112,7 +111,7 @@ function Hero() {
     const arrowButtonClass = "absolute top-1/2 transform -translate-y-1/2 bg-gray-500 bg-opacity-40 hover:bg-opacity-60 text-white p-3 rounded-full z-30 transition cursor-pointer w-12 h-12 flex items-center justify-center";
 
     return (
-        <section className="relative h-screen w-full flex flex-col justify-center items-center overflow-hidden">
+        <section className="relative w-full flex flex-col justify-center items-center overflow-hidden min-h-[60vh] md:min-h-[75vh] lg:h-screen">
             
             {/* 輪播背景圖片容器 */}
             <div className="absolute inset-0 z-0">
@@ -150,13 +149,12 @@ function Hero() {
             )}
 
             {/* 內容區：置於背景圖片之上 */}
-            <div className="relative z-20 text-center p-4">
+            <div className="relative z-20 text-center p-4 w-full">
                 
-                {/* 已刪除標語 */}
                 
                 {/* 搜尋框部分 */}
                 <div 
-                    className="relative w-full max-w-full mx-auto rounded-full shadow-lg" 
+                    className="relative w-full max-w-xl mx-auto rounded-full shadow-lg h-14" 
                     style={{ height: CONTAINER_HEIGHT }} 
                 >
                     <form
@@ -173,7 +171,7 @@ function Hero() {
                         />
                     </form>
                     
-                    {/* 搜尋按鈕：圓形且位置優化 */}
+                    {/* 搜尋按鈕*/}
                     <button
                         type="submit"
                         className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center shadow-xl transition duration-200"

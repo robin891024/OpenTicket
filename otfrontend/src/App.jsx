@@ -3,10 +3,11 @@ import Home from './pages/Home';
 import News from './pages/News';
 import Events from './pages/Events';
 import EventDetail from './pages/EventDetail';
-import Login from './pages/login';
 import Privacy from './pages/Privacy';
 import FAQList from './pages/FAQList';
 import FormPage from './pages/FormPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
     <Route path="/privacy" element={<Privacy />} />
     <Route path="/FAQList" element={<FAQList />} />
     <Route path="/FormPage" element={<FormPage />} />
+    <Route path="/register" element={<Register />} />
     
    </Routes>
 
