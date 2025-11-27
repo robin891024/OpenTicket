@@ -48,8 +48,8 @@ export default function EventDetail() {
     <div className="font-sans min-h-screen flex flex-col">
       <Header showSearchBar={true} />
 
-      <main className="flex-1 bg-bg px-0 py-0 max-w-7xl mx-auto w-full">
-        {/* 麵包屑 */}
+      {/* 麵包屑區塊，維持內容寬度 */}
+      <div className="max-w-7xl mx-auto w-full px-0 py-0">
         <Breadcrumb
           items={[
             { label: "首頁", to: "/" },
@@ -57,33 +57,36 @@ export default function EventDetail() {
             { label: event.title }
           ]}
         />
+      </div>
 
-        {/* 主視覺與按鈕 */}
-        <div className="relative overflow-hidden pb-3" style={{ minHeight: '320px' }}>
-          <div className="absolute inset-0 w-full h-full z-0" aria-hidden="true">
-            <img
-              src={event.image}
-              alt="背景模糊"
-              className="w-full h-full object-cover blur-lg scale-100"
-              style={{ position: 'absolute', inset: 0, zIndex: 0 }}
-            />
-            <div
-              className="absolute inset-0 w-full h-full"
-              style={{
-                backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9))',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                zIndex: 1,
-              }}
-            />
-          </div>
-          <div className="relative flex flex-col items-center justify-center z-20">
-            <img src={event.image} alt={event.title} className="max-w-2xl w-full rounded shadow-lg mt-4" style={{ background: '#222' }} />
-            <div className="text-2xl md:text-3xl font-bold text-white text-center mt-4 mb-2 drop-shadow-lg">
-              {event.title}
-            </div>
+      {/* 主視覺區塊，滿版 */}
+      <div className="w-full relative overflow-hidden pb-3" style={{ minHeight: '320px' }}>
+        <div className="absolute inset-0 w-full h-full z-0" aria-hidden="true">
+          <img
+            src={event.image}
+            alt="背景模糊"
+            className="w-full h-full object-cover blur-lg scale-100"
+            style={{ position: 'absolute', inset: 0, zIndex: 0 }}
+          />
+          <div
+            className="absolute inset-0 w-full h-full"
+            style={{
+              backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.9))',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              zIndex: 1,
+            }}
+          />
+        </div>
+        <div className="relative flex flex-col items-center justify-center z-20">
+          <img src={event.image} alt={event.title} className="max-w-2xl w-full rounded shadow-lg mt-4" style={{ background: '#222' }} />
+          <div className="text-2xl md:text-3xl font-bold text-white text-center mt-4 mb-2 drop-shadow-lg">
+            {event.title}
           </div>
         </div>
+      </div>
+
+      <main className="flex-1 bg-bg px-0 py-0 max-w-7xl mx-auto w-full">
         <div className="flex flex-wrap justify-center gap-4 mt-4 px-4">
           <Button className="bg-blue-600 text-white px-8 py-3 text-lg">立即購票</Button>
         </div>
