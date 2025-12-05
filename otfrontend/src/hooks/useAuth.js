@@ -168,40 +168,46 @@ export const useAuth = () => {
 
     // 2. 登出函式：清除後端 Cookie 和本地狀態
     const logout = useCallback(async () => {
+        // 【第 1 步】：先確保本地狀態被清除 (預先將前端視為登出狀態)
+        setUserName("");
+        setIsLoggedIn(false);
+
+        let success = false;
+        
+        // 預設登出後導航到的頁面 (如果您希望登出後回 /login，這裡直接寫 /login)
+        let targetPath = "/"; 
+
         try {
-            const res = await fetch("/api/member/logout", {
+            // 【第 2 步】：確保使用正確的絕對路徑
+            const res = await fetch(`${BASE_URL}/member/logout`, { // <--- 修正路徑
                 method: "POST",
                 credentials: "include"
             });
 
-            // 無論結果如何，都清除本地狀態
-            setUserName("");
-            setIsLoggedIn(false);
-
-            // 如果後端返回 403/401，視為 Token 過期，導航並帶上狀態
-            if (res.status === 403 || res.status === 401) {
-                navigate("/login", { state: { expired: true } });
-                return;
-            }
-
-            // 登出成功或發生其他錯誤，導航到登入頁面
+            // 【第 3 步】：等待 API 響應，並根據狀態碼設定導航目標
             if (res.ok) {
-                // 如果後端成功，導航到首頁或登入頁
-                navigate("/"); 
+                success = true;
+                // 登出成功，導航到首頁，然後讓路由守衛重定向（如果有的話）
+                targetPath = "/"; 
+            } else if (res.status === 403 || res.status === 401) {
+                // Token 過期或權限不足，雖然登出成功，但導航到登入頁
+                console.warn("Logout API returned 401/403, forcing login redirect.");
+                targetPath = "/login";
             } else {
-                // 處理非 2xx 響應
                 console.error('Logout API failed with status:', res.status);
-                navigate("/"); 
+                // 登出 API 失敗，但我們已經清除了本地狀態，仍導航到首頁/登入頁
+                targetPath = "/";
             }
 
         } catch (error) {
+            // 處理網路錯誤，同樣導航
             console.error('Logout API 網路錯誤:', error);
-            // 發生網路錯誤時，導航到登入頁面
-            setUserName("");
-            setIsLoggedIn(false);
-            navigate("/login");
+            targetPath = "/";
+        } finally {
+            // 【第 4 步】：無論成功失敗，最終執行導航
+            navigate(targetPath);
         }
-    }, [navigate]); // 確保依賴 navigate
+    }, [navigate]);
 
     // 3. 檢查持久化狀態 (元件首次載入時驗證 JWT Cookie 的有效性)
     useEffect(() => {
