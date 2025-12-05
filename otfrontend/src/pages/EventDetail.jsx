@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
@@ -8,17 +8,32 @@ import EventHero from "../components/EventHero";
 import EventShareActions from "../components/EventShareActions";
 import EventIntro from "../components/EventIntro";
 import EventNote from "../components/EventNote";
+import { useAuth } from "../hooks/useAuth";
 
 
 export default function EventDetail() {
-  // 假設未登入與未收藏，未來可接 API
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 預設未登入
-  const [isFavorited, setIsFavorited] = useState(false); // 預設未收藏
+  const { isLoggedIn } = useAuth();
+  const [isFavorited, setIsFavorited] = useState(false);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [memberId, setMemberId] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // 獲取會員 ID
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetch('http://localhost:8080/member/profile', {
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(data => setMemberId(data.id))
+        .catch(err => console.error('獲取會員資料失敗:', err));
+    }
+  }, [isLoggedIn]);
+
+  // 獲取活動資料
   useEffect(() => {
     window.scrollTo(0, 0);
     fetch("/api/events")
@@ -28,7 +43,31 @@ export default function EventDetail() {
       .finally(() => setLoading(false));
   }, []);
 
+  // 檢查收藏狀態
+  useEffect(() => {
+    if (isLoggedIn && memberId && id) {
+      fetch(`http://localhost:8080/wishList/get?userId=${memberId}`, {
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(wishList => {
+          const isInWishList = wishList.some(item => String(item.eventId) === String(id));
+          setIsFavorited(isInWishList);
+        })
+        .catch(err => console.error('檢查收藏狀態失敗:', err));
+    }
+  }, [isLoggedIn, memberId, id]);
+
   const event = events.find(e => String(e.id) === String(id));
+
+  // 若從登入頁帶著 goTicket=1 返回且已登入，直接導向購票
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (isLoggedIn && params.get('goTicket') === '1' && event) {
+      navigate(`/Ticket?eventId=${event.id}`, { replace: true });
+    }
+  }, [isLoggedIn, location.search, event, navigate]);
+
   if (loading) {
     return <div className="text-center py-12">載入中...</div>;
   }
@@ -36,6 +75,15 @@ export default function EventDetail() {
     navigate("/events", { replace: true });
     return null;
   }
+
+  const handlePurchase = () => {
+    if (!isLoggedIn) {
+      alert('請先登入再購票');
+      navigate('/login', { state: { redirect: `/events/detail/${event.id}?goTicket=1` } });
+      return;
+    }
+    navigate(`/Ticket?eventId=${event.id}`);
+  };
 
   return (
     <div className="font-sans min-h-screen flex flex-col">
@@ -57,7 +105,7 @@ export default function EventDetail() {
         <div className="flex justify-center gap-4 mt-4 px-4">
           <Button
             className="bg-blue-600 text-white px-8 py-3 text-lg"
-            onClick={() => navigate(`/Ticket?eventId=${event.id}`)}
+            onClick={handlePurchase}
           >
             立即購票
           </Button>
@@ -66,7 +114,9 @@ export default function EventDetail() {
         <EventShareActions
           isFavorited={isFavorited}
           isLoggedIn={isLoggedIn}
-          onFavorite={() => setIsFavorited(fav => !fav)}
+          memberId={memberId}
+          eventId={id}
+          onFavoriteChange={setIsFavorited}
         />
         {/* 活動說明 */}
         <EventDetailTabs eventId={event.id} />

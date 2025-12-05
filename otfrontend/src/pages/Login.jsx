@@ -36,6 +36,9 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        // 登入後要返回的路徑（若從受保護頁帶入）
+        const redirectPath = location.state?.redirect
+
         try {
             const res = await fetch("http://localhost:8080/member/login", {
                 method: "POST",
@@ -54,8 +57,12 @@ function Login() {
             if (data.success) {
                 setMessage("登入成功！")
                 setTimeout(() => {
-                    navigate("/member");
-                }, 500);
+                    if (redirectPath) {
+                        navigate(redirectPath, { replace: true });
+                    } else {
+                        navigate("/member", { replace: true });
+                    }
+                }, 300);
             } else {
                 setMessage(data.message || "帳號或密碼錯誤")
             }
