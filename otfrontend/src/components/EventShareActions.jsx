@@ -1,6 +1,47 @@
 import React from "react";
 
-export default function EventShareActions({ isFavorited, onFavorite, isLoggedIn }) {
+export default function EventShareActions({ isFavorited, onFavoriteChange, isLoggedIn, memberId, eventId }) {
+  
+  // 切換收藏狀態
+  const handleFavorite = async () => {
+    if (!isLoggedIn) {
+      alert('請先登入再收藏');
+      return;
+    }
+
+    if (!memberId || !eventId) {
+      alert('資料載入中，請稍後再試');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/wishList/add', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          memberId: memberId,
+          eventId: eventId
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // 切換本地狀態
+        onFavoriteChange(prev => !prev);
+        alert(data.message);
+      } else {
+        alert(data.message || '操作失敗，請稍後再試');
+      }
+    } catch (error) {
+      console.error('收藏操作失敗:', error);
+      alert('網路錯誤，請稍後再試');
+    }
+  };
+
   return (
     <div className="flex flex-wrap justify-center gap-4 mt-4 px-4 items-center">
       {/* 收藏按鈕 */}
@@ -9,13 +50,7 @@ export default function EventShareActions({ isFavorited, onFavorite, isLoggedIn 
         title={isFavorited ? "已收藏" : "收藏"}
         aria-label="收藏"
         type="button"
-        onClick={() => {
-          if (!isLoggedIn) {
-            alert('請先登入再收藏');
-            return;
-          }
-          onFavorite();
-        }}
+        onClick={handleFavorite}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path fill={isFavorited ? '#ef4444' : 'currentColor'} d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>

@@ -55,6 +55,7 @@ public class WishListService {
         ADDED, REMOVED
     }
 
+    @Transactional
     public WishAction toggleWish(Long memberId, Long eventId) {
         if (repository.existsByMember_IdAndEvent_Id(memberId, eventId)) {
             repository.deleteByMember_IdAndEvent_Id(memberId, eventId);
