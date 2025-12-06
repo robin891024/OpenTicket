@@ -54,6 +54,6 @@ public class AnnouncementRepository {
         }
 
         // 執行查詢
-        return jdbcTemplate.query(sql, params.toArray(), this::mapRowToAnnouncement);
+        return jdbcTemplate.query(sql, this::mapRowToAnnouncement, params.toArray());
     }
 }
