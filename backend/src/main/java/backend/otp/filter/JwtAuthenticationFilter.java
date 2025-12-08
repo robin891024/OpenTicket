@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 || path.equals("/member/verify")
                 || path.startsWith("/oauth2/")
                 || path.startsWith("/api/announcements") // 允許 /api/announcements 和 /api/announcements/**
-                || path.startsWith("/api/events")        // 允許 /api/events 和 /api/events/**
+                || path.startsWith("/api/events") // 允許 /api/events 和 /api/events/**
                 || path.startsWith("/api/log/session")) {
             filterChain.doFilter(request, response);
             return;
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             // 從 token 中取得使用者名稱
             String username = jwtUtils.getUsernameFromToken(jwt);
-            Integer role = jwtUtils.getRoleFromToken(jwt);  // ★ 從 JWT 取出 role
+            Integer role = jwtUtils.getRoleFromToken(jwt); // ★ 從 JWT 取出 role
 
             // ★ 數字 role 轉成 Spring Security 需要的 Authority 字串
             String authority = switch (role) {
@@ -79,16 +79,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             };
 
             // 建立認證物件
-            UsernamePasswordAuthenticationToken authentication
-                    = new UsernamePasswordAuthenticationToken(
-                            username,
-                            null,
-                            List.of(new SimpleGrantedAuthority(authority))
-                    );
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    username,
+                    null,
+                    List.of(new SimpleGrantedAuthority(authority)));
 
             authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+                    new WebAuthenticationDetailsSource().buildDetails(request));
 
             // 將認證資訊設定到 SecurityContext
             SecurityContextHolder.getContext().setAuthentication(authentication);

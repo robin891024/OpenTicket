@@ -7,6 +7,7 @@ public class Event {
 	private String address;
 	private String eventStart;
 	private String title;
+	
 
 	public Event() {}
 

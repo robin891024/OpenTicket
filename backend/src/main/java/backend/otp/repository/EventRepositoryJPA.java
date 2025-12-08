@@ -1,10 +1,9 @@
-package com.example.openticket.repository;
+package backend.otp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.openticket.entity.EventJpa;
-
+import backend.otp.entity.EventJpa;
 
 
 @Repository

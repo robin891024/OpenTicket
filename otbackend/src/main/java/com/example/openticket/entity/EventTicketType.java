@@ -23,7 +23,7 @@ public class EventTicketType {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    private EventJpa event;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_template_id", nullable = false)
@@ -57,11 +57,11 @@ public class EventTicketType {
         this.id = id;
     }
 
-    public Event getEvent() {
+    public EventJpa getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(EventJpa event) {
         this.event = event;
     }
 

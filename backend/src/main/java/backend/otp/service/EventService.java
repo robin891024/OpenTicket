@@ -1,4 +1,4 @@
-package com.example.openticket.service;
+package backend.otp.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.openticket.entity.EventJpa;
-import com.example.openticket.repository.EventRepositoryJPA;
-
+import backend.otp.entity.EventJpa;
+import backend.otp.repository.EventRepositoryJPA;
 
 
 
@@ -24,9 +23,6 @@ public class EventService {
     public List<EventJpa> getallEvent(){
         return eventsRepository.findAll();
     }
-    // public  List<Events> findActiveEvents(Status status){
-    //     return eventsRepository.findByActiveTrue();
-    // }
     
 
 }

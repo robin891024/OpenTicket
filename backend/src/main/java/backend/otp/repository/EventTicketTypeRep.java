@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import backend.otp.entity.EventTicketType;
 
-// import tw.jay.springtest.entity.EventTicketType;
 
 public interface EventTicketTypeRep extends JpaRepository<EventTicketType, Long> {
     // 依 event_id 查詢

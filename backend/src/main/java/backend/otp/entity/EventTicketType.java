@@ -23,7 +23,7 @@ public class EventTicketType {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    private EventJpa event;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_template_id", nullable = false)
@@ -47,14 +47,6 @@ public class EventTicketType {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
     }
 
     public TicketType getTicketType() {
@@ -96,4 +88,16 @@ public class EventTicketType {
     public void setCreatedat(LocalDateTime createdat) {
         this.createdat = createdat;
     }
+
+    public EventJpa getEvent() {
+        return event;
+    }
+
+    public void setEvent(EventJpa event) {
+        this.event = event;
+    }
+
+   
+
+
 }

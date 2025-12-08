@@ -1,4 +1,4 @@
-package com.example.openticket.controller;
+package backend.otp.controller;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.openticket.entity.EventJpa;
-import com.example.openticket.service.EventService;
+import backend.otp.entity.EventJpa;
+import backend.otp.service.EventService;
 
 
 

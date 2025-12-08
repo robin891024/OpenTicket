@@ -1,4 +1,4 @@
-package com.example.openticket.entity;
+package backend.otp.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "event")//本地端建立的為events，正式端是event
 
-public class Event {
+public class EventJpa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

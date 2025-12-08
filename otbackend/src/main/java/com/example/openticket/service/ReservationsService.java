@@ -13,7 +13,7 @@ import com.example.openticket.dto.ReservationItemsCreateRequest;
 import com.example.openticket.dto.ReservationItemsResponse;
 import com.example.openticket.dto.ReservationResponse;
 import com.example.openticket.dto.ReservationsCreateRequest;
-import com.example.openticket.entity.Event;
+import com.example.openticket.entity.EventJpa;
 import com.example.openticket.entity.EventTicketType;
 import com.example.openticket.entity.Member;
 import com.example.openticket.entity.ReservationItems;
@@ -46,7 +46,7 @@ public class ReservationsService {
         .orElseThrow(() -> new RuntimeException("找不到會員 ID: 3L"));
 
         //查詢活動
-        Event event = eventRepositoryJPA.findById(request.getEventId())
+        EventJpa event = eventRepositoryJPA.findById(request.getEventId())
         .orElseThrow(() -> new RuntimeException("活動不存在" + request.getEventId()));
         
         //所有票種總價

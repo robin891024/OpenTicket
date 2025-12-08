@@ -30,7 +30,7 @@ public class Reservations {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+    private EventJpa event;
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
@@ -61,11 +61,11 @@ public class Reservations {
         this.user = user;
     }
 
-    public Event getEvent() {
+    public EventJpa getEvent() {
         return event;
     }
 
-    public void setEvent(Event event) {
+    public void setEvent(EventJpa event) {
         this.event = event;
     }
 
