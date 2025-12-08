@@ -19,8 +19,7 @@ const REMOTE_API_ENDPOINT = `${REMOTE_API_BASE_URL}/api/hero-images`;
 const SLIDE_INTERVAL = 8000;
 
 const FALLBACK_IMAGES = [
-    "https://via.placeholder.com/1920x1080/f8f8f8/c0c0c0?text=Loading+Image+1",
-    "https://via.placeholder.com/1920x1080/e0e0e0/c0c0c0?text=Loading+Image+2",
+    "https://static.tixcraft.com/images/banner/image_ad2afde95404171db0d1a5eb3d307790.jpg",
 ];
 
 function Hero() {

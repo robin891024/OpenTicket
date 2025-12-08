@@ -1,34 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button } from "@/components/ui/button";
 import Breadcrumb from "../components/Breadcrumb";
 import EventHero from "../components/EventHero";
 import EventShareActions from "../components/EventShareActions";
-import EventIntro from "../components/EventIntro";
-import EventNote from "../components/EventNote";
+import EventDetailTabs from "../components/EventDetailTabs";
+import { useEventDetail } from "../hooks/useEventDetail";
 
 
 export default function EventDetail() {
-  // 假設未登入與未收藏，未來可接 API
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 預設未登入
-  const [isFavorited, setIsFavorited] = useState(false); // 預設未收藏
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const location = useLocation();
+  
+  const {
+    event,
+    isFavorited,
+    setIsFavorited,
+    loading,
+    memberId,
+    isLoggedIn
+  } = useEventDetail(id);  // 若從登入頁帶著 goTicket=1 返回且已登入，直接導向購票
   useEffect(() => {
-    window.scrollTo(0, 0);
-    fetch("/api/events")
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(data => setEvents(Array.isArray(data) ? data : []))
-      .catch(() => setEvents([]))
-      .finally(() => setLoading(false));
-  }, []);
+    const params = new URLSearchParams(location.search);
+    if (isLoggedIn && params.get('goTicket') === '1' && event) {
+      navigate(`/Ticket?eventId=${event.id}`, { replace: true });
+    }
+  }, [isLoggedIn, location.search, event, navigate]);
 
-  const event = events.find(e => String(e.id) === String(id));
   if (loading) {
     return <div className="text-center py-12">載入中...</div>;
   }
@@ -36,6 +37,15 @@ export default function EventDetail() {
     navigate("/events", { replace: true });
     return null;
   }
+
+  const handlePurchase = () => {
+    if (!isLoggedIn) {
+      alert('請先登入再購票');
+      navigate('/login', { state: { redirect: `/events/detail/${event.id}?goTicket=1` } });
+      return;
+    }
+    navigate(`/Ticket?eventId=${event.id}`);
+  };
 
   return (
     <div className="font-sans min-h-screen flex flex-col">
@@ -57,7 +67,7 @@ export default function EventDetail() {
         <div className="flex justify-center gap-4 mt-4 px-4">
           <Button
             className="bg-blue-600 text-white px-8 py-3 text-lg"
-            onClick={() => navigate(`/Ticket?eventId=${event.id}`)}
+            onClick={handlePurchase}
           >
             立即購票
           </Button>
@@ -66,49 +76,14 @@ export default function EventDetail() {
         <EventShareActions
           isFavorited={isFavorited}
           isLoggedIn={isLoggedIn}
-          onFavorite={() => setIsFavorited(fav => !fav)}
+          memberId={memberId}
+          eventId={id}
+          onFavoriteChange={setIsFavorited}
         />
         {/* 活動說明 */}
         <EventDetailTabs eventId={event.id} />
       </main>
       <Footer />
-    </div>
-  );
-}
-
-// 分頁切換元件
-function EventDetailTabs({ eventId }) {
-  const [tab, setTab] = React.useState('intro');
-  return (
-    <div className="bg-white mt-0 px-4 md:px-12 py-8">
-      <div className="sticky top-0 bg-white z-10 flex border-b border-gray-300 mb-6 overflow-x-auto">
-        <button
-          className={`px-4 py-2 text-lg font-bold border-b-2 transition-colors duration-150 whitespace-nowrap ${tab === 'intro' ? 'text-blue-800 border-blue-700' : 'text-gray-500 border-transparent hover:text-blue-700'}`}
-          onClick={() => setTab('intro')}
-          aria-selected={tab === 'intro'}
-          aria-controls="intro"
-          id="tab-intro"
-          type="button"
-        >
-          活動介紹
-        </button>
-        <button
-          className={`px-4 py-2 text-lg font-bold border-b-2 transition-colors duration-150 whitespace-nowrap ${tab === 'note' ? 'text-blue-800 border-blue-700' : 'text-gray-500 border-transparent hover:text-blue-700'}`}
-          onClick={() => setTab('note')}
-          aria-selected={tab === 'note'}
-          aria-controls="note"
-          id="tab-note"
-          type="button"
-        >
-          注意事項
-        </button>
-      </div>
-      <div id="intro" hidden={tab !== 'intro'}>
-        <EventIntro eventId={eventId} />
-      </div>
-      <div id="note" hidden={tab !== 'note'}>
-        <EventNote eventId={eventId} />
-      </div>
     </div>
   );
 }
