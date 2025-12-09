@@ -179,10 +179,10 @@ function Header({ showSearchBar = false }) {
             <nav className="flex flex-col p-6 pt-4 space-y-2 text-base font-medium">
               {primaryNavLinks}
 
-              {/* 注意: 這裡的 "會員資訊" 連結只有在登入前隱藏, 登入後才會顯示在列表中 (因為頂部已經有一個連結了) */}
+              {/* 注意: 這裡的 "會員資訊" 連結只有在登入前隱藏, 登入後才會顯示在列表中 (因為頂部已經有一個連結了)
               {isLoggedIn && (
                  <Link to="/member/info" className="hover:underline transition duration-150 py-2" onClick={() => setIsMenuOpen(false)}>會員資訊</Link>
-              )}
+              )} */}
               
               <div className="border-t border-gray-200 mt-2 pt-2">
                 <a href="mailto:contact@openticket.com" className="block hover:underline transition duration-150 py-2" onClick={() => setIsMenuOpen(false)}>聯絡信箱</a>
