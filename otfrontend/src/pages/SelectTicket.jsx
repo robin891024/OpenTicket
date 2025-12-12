@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Breadcrumb from "../components/Breadcrumb";
+<<<<<<< HEAD
+=======
+import { useNavigate } from "react-router-dom";
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 import '../Css/SelectTicket.css';
 
 // **** 設定Spring Boot基礎URL ****
 const BASE_API_URL = 'http://localhost:8080';
 //圖片先寫死
+<<<<<<< HEAD
 // const DEFAULT_IMAGE_URL = "/images/test.jpg";
+=======
+const DEFAULT_IMAGE_URL = "/images/test.jpg";
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 
 export default function SelectTicket() {
   const params = new URLSearchParams(window.location.search);
@@ -16,6 +24,10 @@ export default function SelectTicket() {
   const [event, setEvent] = useState(null);
   const [tickets, setTickets] = useState([]);
   const [message, setMessage] = useState("");
+<<<<<<< HEAD
+=======
+  const navigate = useNavigate();
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 
   //防止重複點擊
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -27,11 +39,41 @@ export default function SelectTicket() {
     0
   );
   const totalTickets = tickets.reduce((acc, t) => acc + (t.selectedQty || 0), 0);
+<<<<<<< HEAD
+=======
+
+  //恢復原狀
+
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
   const selectedTicketText = tickets
     .filter((t) => t.selectedQty > 0)
     .map((t) => `${t.ticketType} ${t.selectedQty}張`)
     .join("/");
 
+<<<<<<< HEAD
+=======
+//   const selectedTicketsArray = tickets
+//     .filter((t) => t.selectedQty > 0)
+//     .map((t) => `${t.ticketType} ${t.selectedQty}張`)
+
+//     const MAX_TICKETS_PER_LINE = 2;
+
+//     let selectedTicketText = "";
+//     for (let i = 0; i < selectedTicketsArray.length; i++) {
+//     selectedTicketText += selectedTicketsArray[i];
+
+//     if (i < selectedTicketsArray.length - 1) {
+//       // 如果不是最後一個項目
+//       if ((i + 1) % MAX_TICKETS_PER_LINE === 0) {
+//         // 每隔 N 個項目後換行
+//         selectedTicketText += " / \n"; // 插入斜線和換行符
+//       } else {
+//         // 其他項目間使用斜線分隔
+//         selectedTicketText += " / ";
+//       }
+//     }
+//   }
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
   //載入活動資料
   useEffect(() => {
     if (!eventId) return;
@@ -256,6 +298,7 @@ export default function SelectTicket() {
       // setMessage(`庫存保留: ${totalTickets} 張票券，請於3分鐘內完成付款`);
 
       // 6.(此處為模擬) 準備傳送給支付系統的資料
+<<<<<<< HEAD
       const createBody = {
         // userId: 3,//暫時寫死
         eventId: eventId,
@@ -264,6 +307,16 @@ export default function SelectTicket() {
         quantity: t.quantity,
         })),
       };
+=======
+   const createBody = {
+        // userId: 3,//暫時寫死
+    eventId: eventId,
+     items: checkoutItems.map((t) => ({
+        eventTicketTypeId: t.eventTicketTypeId,
+        quantity: t.quantity,
+        })),
+   };
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 
       console.log(tickets.map(t => ({id: t.id, name: t.ticketType})));
       console.log("送後端的 createBody：", createBody);
@@ -284,9 +337,41 @@ export default function SelectTicket() {
         setMessage("訂單建立成功，準備前往付款...");
 
         // 取回 orderId（若後端欄位不同請改名）
+<<<<<<< HEAD
         const orderId = respJson.orderId ?? respJson.id ?? respJson.order_id ?? null;
         const reservationId = respJson.reservationId ?? respJson.reservation_id ?? null;
 
+=======
+        // const orderId = respJson.orderId ?? respJson.id ?? respJson.order_id ?? null;
+        // const reservationId = respJson.reservationId ?? respJson.reservation_id ?? null;
+
+        const orderId = respJson.orderId ?? respJson.id ?? respJson.order_id ?? null;
+        const reservationId = respJson.reservations_id ?? respJson.reservationId ?? respJson.reservation_id ?? null;
+
+        if (reservationId) {
+            // 📌 核心導航邏輯：導向 /checkout/1033 (例如)
+            navigate(`/checkout/${reservationId}`); 
+            return; // 成功導航後，阻止 finally 執行
+      } else {
+      setMessage("訂單已建立，但無法取得結帳 ID，請檢查後端回傳格式。");
+      }
+    } else {
+      // 失敗：解析錯誤訊息並顯示
+      const text = await res.text();
+      console.error("建立訂單失敗：", res.status, text);
+      setMessage("建立訂單失敗：" + (text || res.status));
+    }
+    } catch (err) {
+    //處理例外
+    setMessage("結帳發生錯誤，請檢查網路連線或庫存狀況");
+    console.error("結帳失敗:", err);
+    loadTicketTypes(); 
+    }
+    finally {
+    setIsCheckingOut(false);
+    }
+  }
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
         
         //導到付款頁(目前未完成)
         //  if (orderId) {
@@ -315,6 +400,7 @@ export default function SelectTicket() {
         //       // 無論成功或失敗，都要解除按鈕鎖定（除非 redirect 已經發生）
         //       setIsCheckingOut(false);
         //     }
+<<<<<<< HEAD
         }
       console.log("📝 準備傳送的結帳資料 (JSON):");
       console.log(JSON.stringify(createBody, null, 2));
@@ -330,6 +416,23 @@ export default function SelectTicket() {
       setIsCheckingOut(false);
     }
   }
+=======
+        // }
+  //     console.log("📝 準備傳送的結帳資料 (JSON):");
+  //     console.log(JSON.stringify(createBody, null, 2));
+  //     console.log(createBody);
+  //     // 實際導向：window.location.href = "/payment.html";
+  //   } catch (err) {
+  //     //鎖庫存失敗，顯示錯誤給用戶
+  //     setMessage("此票種庫存不足");
+  //     console.error("結帳失敗:", err);
+  //     loadTicketTypes(); //重新載入票種以顯示最新庫存
+  //   }
+  //   finally {
+  //     setIsCheckingOut(false);
+  // }
+  // }
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 
   //組件卸載時清除計時器，防止內存洩露
   // useEffect(() => {
@@ -354,11 +457,20 @@ export default function SelectTicket() {
         />
       </div>
       
+<<<<<<< HEAD
       <div className="event-info">
         {/* <div className="event-left"> */}
           {/* 這是讀自己的圖片，非資料庫 */}
           {/* <img className="event-image" alt="event" src={`${BASE_API_URL}${DEFAULT_IMAGE_URL}`} /> */}
         {/* </div> */}
+=======
+      <div className="event-info-wrapper">
+      <div className="event-info">
+        <div className="event-left">
+          {/* 這是讀自己的圖片，非資料庫 */}
+          <img className="event-image" alt="event" src={`${BASE_API_URL}${DEFAULT_IMAGE_URL}`} />
+        </div>
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
 
         <div className="event-center">
           <h5 id="eventTitle" className="event-title">
@@ -368,7 +480,11 @@ export default function SelectTicket() {
           <p id="eventLocation">{event ? `活動地點: ${event.address}` : ""}</p>
         </div>
       </div>
+<<<<<<< HEAD
 
+=======
+      </div>
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
       <div className="main-content-wrapper">
         <div className="ticketzone">
           <h2>票種選擇</h2>
@@ -433,10 +549,18 @@ export default function SelectTicket() {
         </div>
 
         <aside className="totalfee-fixed">
+<<<<<<< HEAD
           <div>
             票種: <span id="tickettype">{selectedTicketText}</span>
           </div>
           <div>總共張數: <span id="totaltickets">{`總共${totalTickets}張`}</span></div>
+=======
+          <div className="ticket-type-summary">
+          <span className="ticket-type-label">票種:</span>
+          <span id="tickettype">{selectedTicketText}</span>
+          </div>
+          <div><strong>總張數:</strong> <span id="totaltickets">{`總共 ${totalTickets}張`}</span></div>
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
           <hr />
           <div>
             <strong>總金額: <span id="total">NT${totalAmount}</span></strong>

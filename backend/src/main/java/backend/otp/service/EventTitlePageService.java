@@ -19,6 +19,21 @@ public class EventTitlePageService {
      * @return 圖片 URL (String) 的列表
      */
     public List<String> getHeroImageUrls() {
+<<<<<<< HEAD
         return repository.findHeroImageUrls();
+=======
+        return repository.findAllByOrderByCreatedAtDesc().stream()
+                .map(entity -> {
+                    String path = entity.getImageUrl();
+                    if (path.contains("/")) {
+                        path = path.substring(path.lastIndexOf("/") + 1);
+                    }
+                    if (path.contains("\\")) {
+                        path = path.substring(path.lastIndexOf("\\") + 1);
+                    }
+                    return "/api/images/covers/" + path;
+                })
+                .toList();
+>>>>>>> e337bcd7368029f884354a4a952ff4ea21008e7b
     }
 }
