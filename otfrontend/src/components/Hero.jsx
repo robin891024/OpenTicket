@@ -5,24 +5,15 @@ import { useNavigate } from "react-router-dom";
 // =========================================================
 // 【輪播配置】- 圖片來源設定
 // =========================================================
-// 切換圖片來源：true = 本地硬編碼，false = 從後端 API 載入
-const USE_HARDCODED_IMAGES = true;
 
-// 本地圖片路徑（當 USE_HARDCODED_IMAGES = true 時使用）
-const HARDCODED_IMAGE_PATHS = [
-    '/images/test.jpg',
-    '/images/test_2.jpg',
-    '/images/test_3.jpg',
-];
-
-// 後端 API 配置（當 USE_HARDCODED_IMAGES = false 時使用）
+// 後端 API 配置
 const REMOTE_API_BASE_URL = 'http://localhost:8080';
-const REMOTE_API_ENDPOINT = `${REMOTE_API_BASE_URL}/api/hero-images`;
+const REMOTE_API_ENDPOINT = `${REMOTE_API_BASE_URL}/api/events`;
 
 // 輪播切換速度：8000ms = 8秒自動切換一次
 const SLIDE_INTERVAL = 8000;
 
-// 備用圖片（當本地/API 圖片載入失敗時使用）
+// 備用圖片（當 API 圖片載入失敗時使用）
 const FALLBACK_IMAGES = [
     "https://static.tixcraft.com/images/banner/image_ad2afde95404171db0d1a5eb3d307790.jpg",
 ];
@@ -33,7 +24,11 @@ function Hero() {
     const [images, setImages] = useState([]);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-    const activeImages = images.length > 0 ? images : FALLBACK_IMAGES;
+    // 轉換 activeImages 為物件陣列格式 { id, imageUrl }
+    const activeImages = images.length > 0 
+        ? images 
+        : FALLBACK_IMAGES.map(url => ({ id: null, imageUrl: url }));
+        
     const imagesCount = activeImages.length;
 
     const handleSearch = (e) => {
@@ -47,17 +42,43 @@ function Hero() {
     };
 
     useEffect(() => {
-        if (USE_HARDCODED_IMAGES) {
-            setImages(HARDCODED_IMAGE_PATHS);
-            return;
-        }
-
         const fetchImages = async () => {
             try {
                 const response = await fetch(REMOTE_API_ENDPOINT);
                 const data = await response.json();
-                const urlsWithBase = data.map(relativeUrl => REMOTE_API_BASE_URL + relativeUrl);
-                if (urlsWithBase.length > 0) setImages(urlsWithBase);
+                
+                // 取得當前時間
+                const now = new Date();
+                
+                // 1. 計算與現在時間的差距 (絕對值)
+                // 2. 依差距排序 (最接近現在的在前)
+                // 3. 取前 7 筆
+                const sortedEvents = data
+                    .map(event => ({
+                        ...event,
+                        eventDate: new Date(event.eventStart),
+                        diff: Math.abs(new Date(event.eventStart) - now)
+                    }))
+                    .sort((a, b) => a.diff - b.diff)
+                    .slice(0, 7);
+
+                // 轉換格式
+                const mappedImages = sortedEvents.map(event => {
+                    // 確保 imageUrl 存在，若不存在則使用預設圖
+                    const rawUrl = event.imageUrl || '/api/images/covers/test.jpg';
+                    
+                    return {
+                        id: event.id,
+                        imageUrl: rawUrl.startsWith('http') 
+                            ? rawUrl 
+                            : `${REMOTE_API_BASE_URL}${rawUrl}`,
+                        title: event.title
+                    };
+                });
+
+                if (mappedImages.length > 0) {
+                    setImages(mappedImages);
+                }
             } catch (error) {
                 console.error("無法載入輪播圖片，使用 fallback 圖片。", error);
             }
@@ -110,13 +131,16 @@ function Hero() {
                 - 使用淡入淡出動畫 (transition: opacity 1s)
                 */}
                 <div className="absolute inset-0 z-0 w-full h-full">
-                    {activeImages.map((imageUrl, index) => (
+                    {activeImages.map((imgObj, index) => (
                         <div
                             key={index}
-                            className="w-full h-full absolute top-0 left-0"
+                            onClick={() => {
+                                if (imgObj.id) navigate(`/events/detail/${imgObj.id}`);
+                            }}
+                            className={`w-full h-full absolute top-0 left-0 ${imgObj.id ? 'cursor-pointer' : ''}`}
                             style={{
                                 // 設定背景圖片
-                                backgroundImage: `url(${imageUrl})`,
+                                backgroundImage: `url(${imgObj.imageUrl})`,
                                 // contain: 完整顯示圖片，不切邊（可能有空白）
                                 backgroundSize: 'contain',
                                 // 圖片居中
@@ -127,6 +151,8 @@ function Hero() {
                                 transition: 'opacity 1s ease-in-out',
                                 // 當前圖片顯示（opacity=1），其他隱藏（opacity=0）
                                 opacity: index === currentImageIndex ? 1 : 0,
+                                // 只有當前圖片可以接收點擊事件，避免被上層透明圖片遮擋
+                                pointerEvents: index === currentImageIndex ? 'auto' : 'none',
                             }}
                         />
                     ))}
