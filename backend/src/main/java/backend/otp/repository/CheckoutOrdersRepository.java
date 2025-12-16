@@ -12,5 +12,5 @@ public interface  CheckoutOrdersRepository extends JpaRepository<CheckoutOrders,
     
     List<CheckoutOrders> findAllByOrder_Id(Long orderId);
 
-    List<CheckoutOrders> findAllByOrder_Reservation_User_Id(Long userId);
+    List<CheckoutOrders> findAllByOrder_Reservation_User_IdOrderByOrder_Reservation_CreatedAtDesc(Long userId);
 }

@@ -7,5 +7,5 @@ import backend.otp.entity.ReservationItems;
 
 @Repository
 public interface ReservationItemsRepository extends JpaRepository<ReservationItems, Long>{
-    
+
 }

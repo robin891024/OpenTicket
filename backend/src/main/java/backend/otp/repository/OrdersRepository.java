@@ -14,4 +14,5 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
     Long findIdByReservationIdAndStatusNot(@Param("reservationId") Long reservationId,
             @Param("status") String status);
 
+    Orders findByReservationId (Long reservationId);
 }

@@ -36,17 +36,17 @@ function CheckoutOrder() {
         }
     };
 
-    const getStatusClass = (status) => {
-        const statusMap = {
-            "待付款": "status-pending",
-            "已付款": "status-paid",
-            "已完成": "status-completed",
-            "已取消": "status-cancelled",
-            "退款中": "status-refunding",
-            "已退款": "status-refunded"
-        };
-        return statusMap[status] || "status-completed";
-    };
+    // const getStatusClass = (status) => {
+    //     const statusMap = {
+    //         "待付款": "status-pending",
+    //         "已付款": "status-paid",
+    //         "已完成": "status-completed",
+    //         "已取消": "status-cancelled",
+    //         "退款中": "status-refunding",
+    //         "已退款": "status-refunded"
+    //     };
+    //     return statusMap[status] || "status-completed";
+    // };
 
     // 分頁邏輯
     const totalPages = Math.ceil(message.length / itemsPerPage);
@@ -105,7 +105,7 @@ function CheckoutOrder() {
                                             <th className="table-column-price">單價</th>
                                             <th className="table-column-quantity">數量</th>
                                             <th className="table-column-date">訂購時間</th>
-                                            <th className="table-column-status">狀態</th>
+                                            {/* <th className="table-column-status">狀態</th> */}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -117,11 +117,11 @@ function CheckoutOrder() {
                                                 <td className="table-info table-column-price">NT$ {m.unitPrice?.toLocaleString()}</td>
                                                 <td className="table-info table-column-quantity">{m.quantity}</td>
                                                 <td className="table-info table-column-date">{m.purchaseDate}</td>
-                                                <td className="table-column-status">
+                                                {/* <td className="table-column-status">
                                                     <span className={`status-badge ${getStatusClass(m.orderStatus)}`}>
                                                         {m.orderStatus}
                                                     </span>
-                                                </td>
+                                                </td> */}
                                             </tr>
                                         ))}
                                     </tbody>

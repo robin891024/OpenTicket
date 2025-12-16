@@ -27,6 +27,7 @@ const CheckoutPage = () => {
         if (res.ok) {
           const data = await res.json();
           console.log("從後端抓到的資料:", data);
+          console.log(data.reservationId)
           setOrderData(data);
         } else {
           console.error("找不到訂單");
@@ -39,8 +40,13 @@ const CheckoutPage = () => {
         setLoading(false);
       }
     };
+    console.log(reservationId);
     if (reservationId) fetchReservation();
   }, [reservationId]);
+
+  const setcookie = async () => {
+
+  }
 
   // 處理結帳按鈕點擊
   const handleCheckout = async () => {
@@ -106,6 +112,9 @@ const CheckoutPage = () => {
         const form = document.getElementById('newebpayForm');
         
         if (form) {
+          console.log(reservationId);
+          localStorage.setItem("reservationId", reservationId);
+          console.log(reservationId);
           toast.success("訂單建立成功，前往藍新付款...");
           form.submit(); // 自動跳轉
         } else {

@@ -8,6 +8,7 @@ import '../Css/SelectTicket.css';
 // **** 設定Spring Boot基礎URL ****
 const BASE_API_URL = 'http://localhost:8080';
 //圖片先寫死
+
 const DEFAULT_IMAGE_URL = "/images/test.jpg";
 
 export default function SelectTicket() {
@@ -24,40 +25,7 @@ export default function SelectTicket() {
   //使用ref保存計時器
   const [rollbackTimer, setRollbackTimer] = useState(null);
 
-  const totalAmount = tickets.reduce(
-    (acc, t) => acc + (t.selectedQty || 0) * Number(t.finalPrice ?? t.customprice ?? 0),
-    0
-  );
-  const totalTickets = tickets.reduce((acc, t) => acc + (t.selectedQty || 0), 0);
 
-  //恢復原狀
-
-  const selectedTicketText = tickets
-    .filter((t) => t.selectedQty > 0)
-    .map((t) => `${t.ticketType} ${t.selectedQty}張`)
-    .join("/");
-
-//   const selectedTicketsArray = tickets
-//     .filter((t) => t.selectedQty > 0)
-//     .map((t) => `${t.ticketType} ${t.selectedQty}張`)
-
-//     const MAX_TICKETS_PER_LINE = 2;
-
-//     let selectedTicketText = "";
-//     for (let i = 0; i < selectedTicketsArray.length; i++) {
-//     selectedTicketText += selectedTicketsArray[i];
-
-//     if (i < selectedTicketsArray.length - 1) {
-//       // 如果不是最後一個項目
-//       if ((i + 1) % MAX_TICKETS_PER_LINE === 0) {
-//         // 每隔 N 個項目後換行
-//         selectedTicketText += " / \n"; // 插入斜線和換行符
-//       } else {
-//         // 其他項目間使用斜線分隔
-//         selectedTicketText += " / ";
-//       }
-//     }
-//   }
   //載入活動資料
   useEffect(() => {
     if (!eventId) return;
@@ -78,7 +46,8 @@ export default function SelectTicket() {
     if (!eventId) return;
 
     fetch(`${BASE_API_URL}/api/eventtickettype/event_ticket_type/${eventId}`, {
-      credentials: 'include'})
+      credentials: 'include'
+    })
       .then((r) => {
         if (!r.ok) throw new Error(`無法取得票種資料，錯誤碼: ${r.status}`);
         return r.json();
@@ -106,57 +75,55 @@ export default function SelectTicket() {
             "";
 
           //處裡不限量(is_limited = 0)
-            const rawLimited = t.isLimited ?? t.is_limited ?? t.islimited; //1預設為限量
-            //如果不限量(isLimited === 0)且customlimit為null
-            // if (isLimited === 0 || isLimited === 0){
-            //   stockLimit = 4;
-            // }
-            const isUnlimited =
-              rawLimited === false ||
-              rawLimited === 0 ||
-              rawLimited === "0" ||
-              rawLimited === "false";
-            //確保讀取到 'islimited' 欄位
-            // const isLimitedStatus = t.isLimited ?? t.is_limited ?? t.islimited ?? 1; 
-            let stockLimit;
-            const UI_MAX_CAP = 4; //前端介面的最大購買張數
-            const UNLIMITED_STOCK_FLAG = 999;//不限量票
-            // 假設後端傳回 islimited: false 時是 '不限量'
-            if (isUnlimited) {
-                  // 如果不限量，設置一個極大值，讓 Math.min(4, stockLimit) 保持在 4
-                  stockLimit = UNLIMITED_STOCK_FLAG;
-              } else {
-                  // 如果是限量 (rawLimited=true/1)，則使用後端傳回的 customlimit，若為 null 則設為 0
-                  stockLimit = Number(t.customlimit ?? 0);
-              }
+          const rawLimited = t.isLimited ?? t.is_limited ?? t.islimited; //1預設為限量
+          //如果不限量(isLimited === 0)且customlimit為null
+          // if (isLimited === 0 || isLimited === 0){
+          //   stockLimit = 4;
+          // }
+          const isUnlimited =
+            rawLimited === false ||
+            rawLimited === 0 ||
+            rawLimited === "0" ||
+            rawLimited === "false";
+          //確保讀取到 'islimited' 欄位
+          // const isLimitedStatus = t.isLimited ?? t.is_limited ?? t.islimited ?? 1; 
+          let stockLimit;
+          const UI_MAX_CAP = 4; //前端介面的最大購買張數
+          const UNLIMITED_STOCK_FLAG = 999;//不限量票
+          // 假設後端傳回 islimited: false 時是 '不限量'
+          if (isUnlimited) {
+            // 如果不限量，設置一個極大值，讓 Math.min(4, stockLimit) 保持在 4
+            stockLimit = UNLIMITED_STOCK_FLAG;
+          } else {
+            // 如果是限量 (rawLimited=true/1)，則使用後端傳回的 customlimit，若為 null 則設為 0
+            stockLimit = Number(t.customlimit ?? 0);
+          }
           // 支援多種 price 欄位命名
-          
-          const price = t.customprice ?? t.price ?? t.custom_price ?? 0;
-  
+
+
+          //早鳥票設置
+          const basePrice = t.customprice ?? t.price ?? t.custom_price ?? 0;
+          const calculatedFinalPrice = t.finalPrice ?? basePrice;
           // 優先取 id，若沒有 id 就使用 ticket_template_id 當 key（避免 key 為 undefined）
           const id = t.id ?? t.ticket_template_id ?? null;
 
+
           // 印出每筆原始物件與解析結果，方便 debug
           // console.log("ticket raw:", t, "=> resolved desc:", desc, "=> id:", id, "=> price:", price);
-
-          //早鳥票
-            const earlyBirdEnabled = t.earlyBirdEnabled ?? false;
-            const discountRate = t.discountRate ?? 0;
-            const finalPrice = t.finalPrice ?? price;
 
           return {
             id: id,
             ticket_template_id: t.ticket_template_id ?? null,
             ticketType: t.ticketType ?? t.name ?? "未命名票種",
-            finalPrice: finalPrice,
-            customprice: price,
+            finalPrice: calculatedFinalPrice,
+            customprice: basePrice,
             description: desc,
             selectedQty: 0,
             customlimit: stockLimit,
             //早鳥票相關欄位
             earlyBirdEnabled: t.earlyBirdEnabled ?? false,
             discountRate: t.discountRate ?? 0,
-            
+
           };
         });
 
@@ -186,8 +153,37 @@ export default function SelectTicket() {
     setTickets((prev) =>
       prev.map((t) => (t.id === ticketId ? { ...t, selectedQty: finalQty } : t))
     );
-    
+
   }
+
+  const totalAmount = tickets.reduce(
+    (acc, t) => acc + (t.selectedQty || 0) * Number(t.finalPrice ?? t.customprice ?? 0),
+    0
+  );
+  const totalTickets = tickets.reduce((acc, t) => acc + (t.selectedQty || 0), 0);
+
+  const selectedTicketsArray = tickets
+    .filter((t) => t.selectedQty > 0)
+    .map((t) => `${t.ticketType} ${t.selectedQty}張`)
+
+  const MAX_TICKETS_PER_LINE = 3;//每行顯示的最大票種數量
+
+  let selectedTicketText = "";
+  for (let i = 0; i < selectedTicketsArray.length; i++) {
+    selectedTicketText += selectedTicketsArray[i];
+
+    if (i < selectedTicketsArray.length - 1) {
+      // 如果不是最後一個項目
+      if ((i + 1) % MAX_TICKETS_PER_LINE === 0) {
+        // 每隔 N 個項目後換行
+        selectedTicketText += " / \n"; // 插入斜線和換行符
+      } else {
+        // 其他項目間使用斜線分隔
+        selectedTicketText += " / ";
+      }
+    }
+  }
+
 
   //處理庫存回滾rollback
   // const rollbackStock = async (itemsToRollback) => {
@@ -212,9 +208,9 @@ export default function SelectTicket() {
   //   await Promise.all(increasePromises);
   //   setMessage("庫存已回滾，請重新選擇");
 
-    //重新載入票種資料，更新前端的庫存顯示(如果有)
-    // loadTicketTypes();
-    //清空選中的數量
+  //重新載入票種資料，更新前端的庫存顯示(如果有)
+  // loadTicketTypes();
+  //清空選中的數量
   //   setTickets(prev => prev.map(t => ({ ...t, selectedQty: 0 })));
   // }
 
@@ -245,7 +241,7 @@ export default function SelectTicket() {
 
     try {
       console.log("開始結帳流程...");
-      setMessage("請於 2 分鐘內完成付款。");//原本有鎖票前面會加這段文字"已暫時保留票券，"
+      setMessage("請於 20 分鐘內完成付款。");//原本有鎖票前面會加這段文字"已暫時保留票券，"
 
       //3.針對每一個選定的票種，使用後端API鎖庫存
       // const decreasePromises = checkoutItems.map(async (item) => {
@@ -258,7 +254,7 @@ export default function SelectTicket() {
 
       //   if (!response.ok) {
       //     const errorText = await response.text();
-          //拋出票種名稱的錯誤訊息，方便用戶識別
+      //拋出票種名稱的錯誤訊息，方便用戶識別
       //     throw new Error(`[${item.ticketType}] 庫存不足: ${errorText}`);
       //   }
       //   console.log(`票種ID: ${item.ticketId} 庫存扣: ${item.quantity} 成功`);
@@ -267,7 +263,7 @@ export default function SelectTicket() {
       //4.等待所有庫存鎖完成
       // await Promise.all(decreasePromises);
       // console.log("庫存已鎖成功，進入支付流程");
-      
+
       //5.成功鎖後，設定回滾時間(2分鐘=120000毫秒)
       // const ROLLBACK_TIME_MS = 120000; //2minutes
       //清除舊計時器
@@ -282,22 +278,22 @@ export default function SelectTicket() {
       // setMessage(`庫存保留: ${totalTickets} 張票券，請於3分鐘內完成付款`);
 
       // 6.(此處為模擬) 準備傳送給支付系統的資料
-   const createBody = {
+      const createBody = {
         // userId: 3,//暫時寫死
-    eventId: eventId,
-     items: checkoutItems.map((t) => ({
-        eventTicketTypeId: t.eventTicketTypeId,
-        quantity: t.quantity,
+        eventId: eventId,
+        items: checkoutItems.map((t) => ({
+          eventTicketTypeId: t.eventTicketTypeId,
+          quantity: t.quantity,
         })),
-   };
+      };
 
-      console.log(tickets.map(t => ({id: t.id, name: t.ticketType})));
+      console.log(tickets.map(t => ({ id: t.id, name: t.ticketType })));
       console.log("送後端的 createBody：", createBody);
 
       const res = await fetch(`${BASE_API_URL}/api/reservations/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify(createBody),
       });
 
@@ -307,7 +303,7 @@ export default function SelectTicket() {
         console.log("建立 reservation & order 成功：", respJson);
 
         // 顯示成功訊息
-        setMessage("訂單建立成功，準備前往付款...");
+        // setMessage("訂單建立成功，準備前往付款...");
 
         // 取回 orderId（若後端欄位不同請改名）
         // const orderId = respJson.orderId ?? respJson.id ?? respJson.order_id ?? null;
@@ -317,57 +313,57 @@ export default function SelectTicket() {
         const reservationId = respJson.reservations_id ?? respJson.reservationId ?? respJson.reservation_id ?? null;
 
         if (reservationId) {
-            // 📌 核心導航邏輯：導向 /checkout/1033 (例如)
-            navigate(`/checkout/${reservationId}`); 
-            return; // 成功導航後，阻止 finally 執行
+          // 📌 核心導航邏輯：導向 /checkout/1033 (例如)
+          navigate(`/checkout/${reservationId}`);
+          return; // 成功導航後，阻止 finally 執行
+        } else {
+          setMessage("訂單已建立，但無法取得結帳 ID，請檢查後端回傳格式。");
+        }
       } else {
-      setMessage("訂單已建立，但無法取得結帳 ID，請檢查後端回傳格式。");
+        // 失敗：解析錯誤訊息並顯示
+        const text = await res.text();
+        console.error("建立訂單失敗：", res.status, text);
+        setMessage("建立訂單失敗：" + (text || res.status));
       }
-    } else {
-      // 失敗：解析錯誤訊息並顯示
-      const text = await res.text();
-      console.error("建立訂單失敗：", res.status, text);
-      setMessage("建立訂單失敗：" + (text || res.status));
-    }
     } catch (err) {
-    //處理例外
-    setMessage("結帳發生錯誤，請檢查網路連線或庫存狀況");
-    console.error("結帳失敗:", err);
-    loadTicketTypes(); 
+      //處理例外
+      setMessage("結帳發生錯誤，請檢查網路連線或庫存狀況");
+      console.error("結帳失敗:", err);
+      loadTicketTypes();
     }
     finally {
-    setIsCheckingOut(false);
+      setIsCheckingOut(false);
     }
   }
-        
-        //導到付款頁(目前未完成)
-        //  if (orderId) {
-        //     //導向：/payment?orderId=xxx
-        //     window.location.href = `/payment?orderId=${orderId}&reservationId=${reservationId ?? ""}`;
-        //     return;
-        //     } else {
-        //     // 若沒有 orderId，仍把使用者導到訂單頁或顯示資訊
-        //     setMessage("訂單已建立，請前往訂單管理查詢。");
-        //     }
-        //     } else {
-        //       // 失敗：解析錯誤訊息並顯示
-        //       const text = await res.text();
-        //       console.error("建立訂單失敗：", res.status, text);
-        //       setMessage("建立訂單失敗：" + (text || res.status));
-        //       // 若你有啟動鎖庫存，這裡可選擇去回滾鎖定的庫存
-        //       // rollbackStock(checkoutItems);
-        //     }
-        //     } catch (err) {
-        //       // 處理例外（例如鎖庫存失敗、網路錯誤等）
-        //       console.error("結帳錯誤：", err);
-        //       setMessage("結帳發生錯誤：" + (err.message || err));
-        //       // 若你之前有做 decreaseStock，並且失敗或中斷，建議呼叫 rollbackStock
-        //       // rollbackStock(checkoutItems);
-        //     } finally {
-        //       // 無論成功或失敗，都要解除按鈕鎖定（除非 redirect 已經發生）
-        //       setIsCheckingOut(false);
-        //     }
-        // }
+
+  //導到付款頁(目前未完成)
+  //  if (orderId) {
+  //     //導向：/payment?orderId=xxx
+  //     window.location.href = `/payment?orderId=${orderId}&reservationId=${reservationId ?? ""}`;
+  //     return;
+  //     } else {
+  //     // 若沒有 orderId，仍把使用者導到訂單頁或顯示資訊
+  //     setMessage("訂單已建立，請前往訂單管理查詢。");
+  //     }
+  //     } else {
+  //       // 失敗：解析錯誤訊息並顯示
+  //       const text = await res.text();
+  //       console.error("建立訂單失敗：", res.status, text);
+  //       setMessage("建立訂單失敗：" + (text || res.status));
+  //       // 若你有啟動鎖庫存，這裡可選擇去回滾鎖定的庫存
+  //       // rollbackStock(checkoutItems);
+  //     }
+  //     } catch (err) {
+  //       // 處理例外（例如鎖庫存失敗、網路錯誤等）
+  //       console.error("結帳錯誤：", err);
+  //       setMessage("結帳發生錯誤：" + (err.message || err));
+  //       // 若你之前有做 decreaseStock，並且失敗或中斷，建議呼叫 rollbackStock
+  //       // rollbackStock(checkoutItems);
+  //     } finally {
+  //       // 無論成功或失敗，都要解除按鈕鎖定（除非 redirect 已經發生）
+  //       setIsCheckingOut(false);
+  //     }
+  // }
   //     console.log("📝 準備傳送的結帳資料 (JSON):");
   //     console.log(JSON.stringify(createBody, null, 2));
   //     console.log(createBody);
@@ -405,22 +401,22 @@ export default function SelectTicket() {
           ]}
         />
       </div>
-      
-      <div className="event-info-wrapper">
-      <div className="event-info">
-        <div className="event-left">
-          {/* 這是讀自己的圖片，非資料庫 */}
-          <img className="event-image" alt="event" src={`${BASE_API_URL}${DEFAULT_IMAGE_URL}`} />
-        </div>
 
-        <div className="event-center">
-          <h5 id="eventTitle" className="event-title">
-            {event?.title || "活動標題載入中..."}
-          </h5>
-          <p id="eventDate">{event ? `展出期間: ${event.event_start} ~ ${event.event_end}` : ""}</p>
-          <p id="eventLocation">{event ? `活動地點: ${event.address}` : ""}</p>
+      <div className="event-info-wrapper">
+        <div className="event-info">
+          <div className="event-left">
+            {/* 這是讀自己的圖片，非資料庫 */}
+            <img className="event-image" alt="event" src={`${BASE_API_URL}${DEFAULT_IMAGE_URL}`} />
+          </div>
+
+          <div className="event-center">
+            <h5 id="eventTitle" className="event-title">
+              {event?.title || "活動標題載入中..."}
+            </h5>
+            <p id="eventDate">{event ? `展出期間: ${event.event_start} ~ ${event.event_end}` : ""}</p>
+            <p id="eventLocation">{event ? `活動地點: ${event.address}` : ""}</p>
+          </div>
         </div>
-      </div>
       </div>
       <div className="main-content-wrapper">
         <div className="ticketzone">
@@ -444,37 +440,57 @@ export default function SelectTicket() {
                     </tr>
                   ) : (
                     tickets.map((t) => (
-                      <tr key={t.id ?? t.ticketType} data-ticket-id={t.id ?? ""}>
-                        <td>{t.ticketType}</td>
-                        <td>{t.finalPrice}</td>{/*t.customprice*/}
-                        <td>
-                          <select
-                            className="ticketselct"
-                            value={t.selectedQty}
-                            onChange={(e) => handleQtyChange(t.id, Number(e.target.value))}
-                            data-price={t.customprice}
-                            disabled={isCheckingOut} //結帳中禁用選擇
-                          >
-                            <option value={0}>請選擇張數</option>
-                          {(() => {
-                              // 計算可選的最大數量：Min(4, 實際庫存)
-                              const maxSelectable = Math.min(4, Number(t.customlimit || 0));
-
-                              const options = [];
-
-                              for (let i = 1; i <= maxSelectable; i++) {
-                                options.push(
-                                  <option key={i} value={i}>
-                                    {i}
-                                  </option>
-                                );
-                              }
-                              return options;
-                            })()}
-                          </select>
-                        </td>
-                        <td>{t.description}</td>
-                      </tr>
+                      <React.Fragment key={t.id ?? t.ticketType}>
+                        <tr className={t.earlyBirdEnabled && (t.finalPrice < t.customprice) ? 'early-bird-row' : ''}
+                          data-ticket-id={t.id ?? ""}>
+                          <td className={t.earlyBirdEnabled && (t.finalPrice < t.customprice) ? 'early-bird-name' : ''}>
+                            {t.ticketType}
+                          </td>
+                          <td>
+                            {t.earlyBirdEnabled && (t.finalPrice < t.customprice) ? (
+                              <>
+                                <span className="original-price">NT${t.customprice}</span>
+                                <span className="final-price-highlight">NT${t.finalPrice}</span>
+                              </>
+                            ) : (
+                              `NT$${t.finalPrice}`
+                            )}
+                          </td>{/*t.customprice*/}
+                          <td>
+                            <select
+                              className="ticketselct"
+                              value={t.selectedQty}
+                              onChange={(e) => handleQtyChange(t.id, Number(e.target.value))}
+                              data-price={t.customprice}
+                              disabled={isCheckingOut} //結帳中禁用選擇
+                            >
+                              <option value={0}>請選擇張數</option>
+                              {(() => {
+                                // 計算可選的最大數量：Min(4, 實際庫存)
+                                const maxSelectable = Math.min(4, Number(t.customlimit || 0))
+                                const options = []
+                                for (let i = 1; i <= maxSelectable; i++) {
+                                  options.push(
+                                    <option key={i} value={i}>
+                                      {i}
+                                    </option>
+                                  );
+                                }
+                                return options;
+                              })()}
+                            </select>
+                          </td>
+                          <td>{t.description}</td>
+                        </tr>
+                        {/* 判斷是否顯示早鳥票訊息行 */}
+                        {t.earlyBirdEnabled && (t.finalPrice < t.customprice) && (
+                          <tr className="early-bird-message-row">
+                            <td colSpan="4" className="early-bird-message">
+                              <span className="early-bird-text">✨ 早鳥票優惠實施中！</span>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     ))
                   )}
                 </tbody>
@@ -487,18 +503,23 @@ export default function SelectTicket() {
 
         <aside className="totalfee-fixed">
           <div className="ticket-type-summary">
-          <span className="ticket-type-label">票種:</span>
-          <span id="tickettype">{selectedTicketText}</span>
+            <span className="ticket-type-label">票種:</span>
+            <span id="tickettype">{selectedTicketText}</span>
           </div>
-          <div><strong>總張數:</strong> <span id="totaltickets">{`總共 ${totalTickets}張`}</span></div>
+          <div><strong>總張數:</strong> <span id="totaltickets">{totalTickets > 0 ? `總共 ${totalTickets}張` : ''}</span></div>
           <hr />
           <div>
             <strong>總金額: <span id="total">NT${totalAmount}</span></strong>
           </div>
-          <div style={{ marginTop: 10 }}>
-            <button 
-              className="btn" 
-              id="checkoutBtn" 
+          <div style={{ marginTop: 10 }} className="checkout-buttons">
+            <button
+              className="btn btn-secondary cancel-btn"
+              onClick={() => navigate(`/events`)} //點擊取消是導回活動列表頁
+              disabled={isCheckingOut}
+            >取消購票</button>
+            <button
+              className="btn"
+              id="checkoutBtn"
               onClick={handleCheckout}
               disabled={isCheckingOut || totalTickets === 0} //禁用按鈕直到載入完成或選擇數量 > 0
             >前往結帳</button>

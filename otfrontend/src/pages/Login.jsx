@@ -70,9 +70,9 @@ function Login() {
                     if (data.role == "user") {
                         navigate('/member');
                     } else if (data.role == "admin") {
-                        navigate('/organizer/dashboard')
+                        window.location.href = "http://localhost:8081/organizer/dashboard";
                     } else if (data.role == "developer") {
-                        navigate('/admin/dashboard')
+                        window.location.href = "http://localhost:8081/admin/dashboard";
                     } else {
                         console.log("error");
                     }

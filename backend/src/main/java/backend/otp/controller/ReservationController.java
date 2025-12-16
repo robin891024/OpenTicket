@@ -1,5 +1,8 @@
 package backend.otp.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +18,13 @@ import backend.otp.dto.ReservationsCreateRequest;
 import backend.otp.entity.Orders;
 import backend.otp.entity.Reservations;
 import backend.otp.repository.MemberRepository;
+import backend.otp.service.MemberService;
+import backend.otp.service.OrderService;
 import backend.otp.service.OrdersService;
 import backend.otp.service.ReservationsService;
+import backend.otp.utils.JWTutils;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
@@ -29,7 +37,16 @@ public class ReservationController {
     private OrdersService ordersService;
 
     @Autowired
+    private OrderService orderService;
+
+    @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private JWTutils jwt;
 
     /**
      * 處理創建預定單的 POST 請求
@@ -106,4 +123,50 @@ public class ReservationController {
     // return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     // }
     // }
+
+    @PostMapping("/change")
+    public ResponseEntity<Map<String, Object>> changeState (@RequestBody Map<String, Long> body, HttpServletRequest request) {
+        String jwtToken = getJwtFromCookie(request);
+        Map<String, Object> res = new HashMap<>();
+
+        if (jwtToken != null && jwt.validateToken(jwtToken)) {
+            String account = jwt.getUsernameFromToken(jwtToken);
+            
+            Long userId = memberService.findIdByAccount(account);
+
+            boolean isexist = reservationsService.checkReservations(body.get("reservationId"), userId);
+
+            if (isexist) {
+                if(orderService.changeState(body.get("reservationId"))) {
+                    res.put("success", true);
+                    res.put("message", "訂單修改完成");
+                }else {
+                    res.put("success", false);
+                    res.put("message", "訂單修改失敗");
+                }
+            }else {
+                res.put("success", isexist);
+                res.put("message", "該訂單不存在或已過期");
+            }
+
+        }else {
+            res.put("success", false);
+            res.put("message", "未登入");
+        }
+        return ResponseEntity.ok(res);
+    }
+
+    private String getJwtFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwt".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        return null;
+    }
 }

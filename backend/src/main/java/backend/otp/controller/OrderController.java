@@ -1,10 +1,14 @@
 package backend.otp.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import backend.otp.dto.CheckoutRequest;
 import backend.otp.service.NewebPayService;
 import backend.otp.service.OrderService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -27,7 +31,7 @@ public class OrderController {
         // 可以在這裡呼叫 service 直接把 orderId 的狀態改成 PAID
         // 藍新的幕後處理，不能用8080的API呼叫，但我們先完成開發
 
-        orderService.updateStatusToPaid(orderId); 
+        // orderService.updateStatusToPaid(orderId); 
 
         System.out.println("準備前往藍新金流，訂單ID: " + orderId + ", 金額: " + amount);
 

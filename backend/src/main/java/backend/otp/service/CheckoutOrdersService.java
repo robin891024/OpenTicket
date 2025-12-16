@@ -30,7 +30,7 @@ public class CheckoutOrdersService {
 
     public List<CheckoutOrdersDto> getUserCheckoutOrders(Long userId) {
 
-        List<CheckoutOrders> list = checkoutRepo.findAllByOrder_Reservation_User_Id(userId);
+        List<CheckoutOrders> list = checkoutRepo.findAllByOrder_Reservation_User_IdOrderByOrder_Reservation_CreatedAtDesc(userId);
 
         return list.stream().map(o -> {
 

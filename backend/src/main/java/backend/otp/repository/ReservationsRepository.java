@@ -13,4 +13,6 @@ public interface ReservationsRepository extends JpaRepository<Reservations, Long
 
     @Query("SELECT r.id FROM Reservations r WHERE r.user.id = :userId")
     List<Long> findAllIdByUser_Id(Long userId);
+
+    boolean existsByIdAndUserId(Long reservationId, Long userId);
 }
