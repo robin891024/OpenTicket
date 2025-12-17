@@ -10,6 +10,7 @@ import EventHero from "../components/EventHero";
 import EventShareActions from "../components/EventShareActions";
 import EventDetailTabs from "../components/EventDetailTabs";
 import { Button } from "@/components/ui/button";
+import Top from "../components/ui/Top";
 
 import { useEventDetail } from "../hooks/useEventDetail";
 import { useToast } from "../components/ToastContext";
@@ -133,6 +134,7 @@ export default function EventDetail() {
         <EventDetailTabs eventId={event.id} />
       </main>
       <Footer />
+      <Top />
     </div>
   );
 }

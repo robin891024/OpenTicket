@@ -8,6 +8,7 @@ import Footer from "../components/Footer";
 import Breadcrumb from "../components/Breadcrumb";
 import EventTabs from "../components/EventTabs";
 import EventGrid from "../components/EventGrid";
+import Top from "../components/ui/Top";
 
 export default function Events() {
     // 分頁狀態與活動資料
@@ -117,6 +118,7 @@ export default function Events() {
                 )}
             </main>
             <Footer />
+            <Top />
         </div>
     );
 }
