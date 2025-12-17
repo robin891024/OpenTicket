@@ -104,8 +104,7 @@ function Login() {
     ]
 
     return (
-        <div className="login-page">
-            {/* 深色模式切換按鈕 */}
+        <>
             <button
                 className="dark-mode-toggle"
                 onClick={toggleDarkMode}
@@ -115,107 +114,116 @@ function Login() {
                     {isDark ? "light_mode" : "dark_mode"}
                 </span>
             </button>
+            <div className="login-page">
+                {/* 深色模式切換按鈕 */}
 
-            <div className="login-container">
-                {/* 左側輪播區 */}
-                <div className="carousel-section">
-                    <div className="carousel-wrapper">
-                        <div className="carousel-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-                            {carouselItems.map((item, index) => (
-                                <div key={index} className="carousel-item">
-                                    <div className="carousel-card">
-                                        <div
-                                            className="carousel-image"
-                                            style={{ backgroundImage: `url(${item.image})` }}
-                                        />
-                                        <div className="carousel-content">
-                                            <h3>{item.title}</h3>
-                                            <p>{item.description}</p>
+
+                <div className="login-container">
+                    {/* 左側輪播區 */}
+                    <div className="carousel-section">
+                        <div className="carousel-wrapper">
+                            <div className="carousel-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+                                {carouselItems.map((item, index) => (
+                                    <div key={index} className="carousel-item">
+                                        <div className="carousel-card">
+                                            <div
+                                                className="carousel-image"
+                                                style={{ backgroundImage: `url(${item.image})` }}
+                                            />
+                                            <div className="carousel-content">
+                                                <h3>{item.title}</h3>
+                                                <p>{item.description}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="carousel-indicators">
+                            {carouselItems.map((_, index) => (
+                                <span
+                                    key={index}
+                                    className={`indicator ${index === currentSlide ? 'active' : ''}`}
+                                    onClick={() => setCurrentSlide(index)}
+                                />
                             ))}
                         </div>
                     </div>
-                    <div className="carousel-indicators">
-                        {carouselItems.map((_, index) => (
-                            <span
-                                key={index}
-                                className={`indicator ${index === currentSlide ? 'active' : ''}`}
-                                onClick={() => setCurrentSlide(index)}
-                            />
-                        ))}
-                    </div>
-                </div>
 
-                {/* 右側登入表單 */}
-                <div className="form-section">
-                    <div className="form-wrapper">
-                        {message && <div className="message">{message}</div>}
-                        <form onSubmit={handleSubmit}>
-                            <h1>登入</h1>
-                            <div className="form-group">
-                                <label htmlFor="account">帳號</label>
-                                <input
-                                    type="text"
-                                    id="account"
-                                    placeholder="Enter your account"
-                                    value={account}
-                                    onChange={(e) => setAccount(e.target.value)}
-                                    required
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="password">密碼</label>
-                                <div className="password-input-wrapper">
+                    {/* 右側登入表單 */}
+                    <div className="form-section">
+                        <div className="form-wrapper">
+                            {message && <div className="message">{message}</div>}
+                            <form onSubmit={handleSubmit}>
+                                <h1>登入</h1>
+                                <div className="form-group">
+                                    <label htmlFor="account">帳號</label>
                                     <input
-                                        type={showPassword ? "text" : "password"}
-                                        id="password"
-                                        placeholder="Enter your password"
-                                        value={password}
-                                        autoComplete="off"
-                                        onChange={(e) => setPassword(e.target.value)}
+                                        type="text"
+                                        id="account"
+                                        placeholder="Enter your account"
+                                        value={account}
+                                        onChange={(e) => setAccount(e.target.value)}
                                         required
                                     />
-                                    <button
-                                        type="button"
-                                        className="toggle-password"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        aria-label={showPassword ? "隱藏密碼" : "顯示密碼"}
-                                    >
-                                        <span className="material-symbols-outlined">
-                                            {showPassword ? "visibility_off" : "visibility"}
-                                        </span>
-                                    </button>
                                 </div>
-                            </div>
 
-                            <button type="submit" className="btn-primary">
-                                登入
-                            </button>
+                                <div className="form-group">
+                                    <label htmlFor="password">密碼</label>
+                                    <div className="password-input-wrapper">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            id="password"
+                                            placeholder="Enter your password"
+                                            value={password}
+                                            autoComplete="off"
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            className="toggle-password"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            aria-label={showPassword ? "隱藏密碼" : "顯示密碼"}
+                                        >
+                                            <span className="material-symbols-outlined">
+                                                {showPassword ? "visibility_off" : "visibility"}
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
 
-                            <div className="divider">
-                                <hr />
-                            </div>
+                                <button type="submit" className="btn-primary">
+                                    登入
+                                </button>
 
-                            <div className="google-login-wrapper">
-                                <GoogleLoginButton />
-                            </div>
+                                <div className="divider">
+                                    <hr />
+                                </div>
 
-                            <div className="divider">
-                                <hr />
-                            </div>
+                                <div className="google-login-wrapper">
+                                    <GoogleLoginButton />
+                                </div>
 
-                            <p className="register-link">
-                                還沒有帳號嗎？
-                                <Link to="/register">點此註冊</Link>
-                            </p>
-                        </form>
+                                <div className="divider">
+                                    <hr />
+                                </div>
+
+                                <p className="register-link">
+                                    還沒有帳號嗎？
+                                    <Link to="/register">點此註冊</Link>
+                                </p>
+
+                                <p className="back-home">
+                                    <Link to="/">回到首頁</Link>
+                                </p>    
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
+
     )
 }
 

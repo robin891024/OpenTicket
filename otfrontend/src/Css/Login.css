@@ -14,8 +14,8 @@
 
 /* 登入頁面容器 */
 .login-page {
-    border-radius: 1rem;
-    min-height: 95dvh;
+    border-radius: 0;
+    min-height: 100dvh;
     display: flex;
     background: #f6f7f8;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
@@ -26,8 +26,9 @@
 /* 深色模式切換按鈕 */
 .dark-mode-toggle {
     position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
+    top: auto;
+    bottom: 3.5rem;
+    left: 1.5rem;
     width: 3rem;
     height: 3rem;
     border-radius: 9999px;
@@ -96,7 +97,7 @@
     border-radius: 0.75rem;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding-bottom: 2rem; 
+    padding-bottom: 2rem;
 }
 
 .carousel-image {
@@ -125,7 +126,7 @@
 }
 
 .carousel-indicators {
-    bottom: 10rem; 
+    bottom: 10rem;
     display: flex;
     justify-content: center;
     gap: 0.5rem;
@@ -324,7 +325,7 @@
     .carousel-section {
         display: flex;
     }
-    
+
     .login-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -336,7 +337,7 @@
     .form-section {
         padding: 1.5rem;
     }
-    
+
     .form-wrapper h1 {
         font-size: 1.875rem;
     }
@@ -347,15 +348,15 @@
     .form-section {
         padding: 1rem;
     }
-    
+
     .form-wrapper {
         max-width: 100%;
     }
-    
+
     .form-wrapper h1 {
         font-size: 1.5rem;
     }
-    
+
     .form-group input,
     .btn-primary {
         height: 2.75rem;
@@ -368,6 +369,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -467,65 +469,82 @@
     .login-page {
         background: #111921;
     }
-    
+
     .carousel-section {
         background: #111921;
         border-right-color: #334155;
     }
-    
+
     .carousel-card {
         background: rgba(51, 65, 85, 0.5);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
-    
+
     .carousel-content h3 {
         color: #f1f5f9;
     }
-    
+
     .carousel-content p {
         color: #94a3b8;
     }
-    
+
     .indicator {
         background: #475569;
     }
-    
+
     .form-section {
         background: #111921;
     }
-    
+
     .form-wrapper h1 {
         color: #f1f5f9;
     }
-    
+
     .form-group label {
         color: #e2e8f0;
     }
-    
+
     .form-group input {
         background: #1e293b;
         border-color: #334155;
         color: #f1f5f9;
     }
-    
+
     .form-group input:focus {
         background: #111921;
         border-color: #197fe6;
     }
-    
+
     .form-group input::placeholder {
         color: #64748b;
     }
-    
+
     .toggle-password {
         color: #94a3b8;
     }
-    
+
     .divider hr {
         border-top-color: #334155;
     }
-    
+
     .register-link {
         color: #94a3b8;
     }
+}
+
+.back-home {
+    margin-top: 0.5rem;      /* 靠近註冊 */
+    text-align: center;
+}
+
+.back-home a {
+    font-size: 0.8rem;       /* 比註冊小 */
+    color: #94a3b8;          /* 灰藍色，不是主藍 */
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.back-home a:hover {
+    color: #2563eb;          /* hover 才顯示主色 */
+    text-decoration: underline;
 }
