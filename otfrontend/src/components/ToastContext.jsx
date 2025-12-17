@@ -52,7 +52,7 @@ export const ToastProvider = ({ children }) => {
 
     // Toast 訊息的 UI (這裡只是簡單的結構，樣式可以自行調整)
     const Toast = () => (
-    <div className={`fixed top-14 left-1/2 transform -translate-x-1/2 z-[100] transition-all duration-300
+    <div className={`fixed top-14 right-6 z-[100] transition-all duration-300
         
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full'}
         
