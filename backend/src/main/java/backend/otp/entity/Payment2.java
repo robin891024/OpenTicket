@@ -11,19 +11,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Setter
+@Getter
 @Table(name = "payments")
-public class Payment {
+public class Payment2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    private Orders orders;
 
     @Column(name = "payment_method", nullable = true)
     private String paymentMethod;
@@ -36,4 +38,5 @@ public class Payment {
 
     @Column(name = "created_at", insertable = false, updatable = false, nullable = true)
     private LocalDateTime createdAt;
+    
 }
