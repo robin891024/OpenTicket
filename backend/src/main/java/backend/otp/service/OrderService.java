@@ -16,6 +16,7 @@ import backend.otp.entity.EventTicketType;
 import backend.otp.entity.Order;
 import backend.otp.entity.Orders;
 import backend.otp.entity.Payment;
+import backend.otp.entity.Payment2;
 import backend.otp.entity.Reservation;
 import backend.otp.entity.ReservationItem;
 import backend.otp.repository.CheckoutOrderRepository;
@@ -24,6 +25,7 @@ import backend.otp.repository.EventTicketTypeRep;
 import backend.otp.repository.EventTicketTypeRepository;
 import backend.otp.repository.OrderRepository;
 import backend.otp.repository.OrdersRepository;
+import backend.otp.repository.Payment2Repository;
 import backend.otp.repository.PaymentRepository;
 import backend.otp.repository.ReservationItemRepository;
 import backend.otp.repository.ReservationRepository;
@@ -57,6 +59,9 @@ public class OrderService {
 
     @Autowired
     private EventTicketTypeRep eventTicketRep;
+
+    @Autowired
+    private Payment2Repository payment2Repository;
 
     @Transactional
     public Long createOrder(CheckoutRequest request) {
@@ -159,6 +164,15 @@ public class OrderService {
             if (checkoutOrdersRepository.existsByOrderId(orders.getId())) {
                 return false;
             }
+
+            Payment2 payment2 = new Payment2();
+
+            payment2.setOrders(orders);
+            payment2.setStatus("SUCCESS");
+            payment2.setCreatedAt(reservationRepository.findById(reservationId).get().getCreatedAt());
+            
+
+            payment2Repository.save(payment2);
 
             List<ReservationItem> items
                     = reservationItemRepository.findByReservationsId(reservationId);
