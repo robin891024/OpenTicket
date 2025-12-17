@@ -6,6 +6,7 @@ import java.util.List;
 
 public class ReservationCheckoutDto {
     private Long reservationId;
+    private String eventTitle;
     private BigDecimal totalAmount;
     private String userName;     // 買票的人
     private String userEmail;    // 聯絡信箱，名稱可以跟資料表不同
@@ -26,6 +27,14 @@ public class ReservationCheckoutDto {
 
     public List<ItemDto> getItems() { return items; }
     public void setItems(List<ItemDto> items) { this.items = items; }
+
+    public String getEventTitle() {
+        return eventTitle;
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+    }
 
     // 內部的類別，用來裝每一行明細 (例如：一般票 2張)
     public static class ItemDto {

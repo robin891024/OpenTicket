@@ -15,6 +15,7 @@ const CheckoutPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [orderData, setOrderData] = useState(null);
+  const [event, setEvent] = useState(null);
 
   // 載入預約單資料
   useEffect(() => {
@@ -28,7 +29,7 @@ const CheckoutPage = () => {
           const data = await res.json();
           console.log("從後端抓到的資料:", data);
           console.log(data.reservationId)
-          setOrderData(data);
+          setOrderData(data);            
         } else {
           console.error("找不到訂單");
           toast.error("找不到訂單資料");
@@ -171,7 +172,7 @@ const CheckoutPage = () => {
 
                 {orderData.items && orderData.items.map((item, idx) => (
                   <div key={idx} className="grid grid-cols-5 text-base text-gray-700 py-4 border-b border-gray-100 items-center">
-                    <div className="font-medium text-left truncate pr-2">活動</div>
+                    <div className="font-medium text-left break-words pr-2">{orderData?.eventTitle || event?.title}</div>
                     <div className="text-gray-500 text-left text-sm">{item.ticketName}</div>
                     <div className="text-center">{item.price}</div>
                     <div className="text-center">x {item.quantity}</div>

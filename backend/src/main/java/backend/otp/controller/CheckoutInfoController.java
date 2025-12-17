@@ -1,7 +1,7 @@
 package backend.otp.controller;
 
-import java.util.List;
-import java.math.BigDecimal; // 引入 BigDecimal 類別
+import java.math.BigDecimal;
+import java.util.List; // 引入 BigDecimal 類別
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,21 +13,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-// DTO 和 Entity
 import backend.otp.dto.ReservationCheckoutDto;
 import backend.otp.entity.EventTicketType;
 import backend.otp.entity.Reservation;
 import backend.otp.entity.ReservationItem;
 import backend.otp.entity.TicketType;
-
-// Repositories
 import backend.otp.repository.EventTicketTypeRepository;
 import backend.otp.repository.MemberRepository;
 import backend.otp.repository.ReservationItemRepository;
 import backend.otp.repository.ReservationRepository;
 import backend.otp.repository.TicketTypeRepository;
 import backend.otp.repository.UserRepository;
-
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -48,7 +44,6 @@ public class CheckoutInfoController {
     @Autowired // 必須加入 MemberRepository 來解析用戶 ID
     private MemberRepository memberRepository;
 
-
     @GetMapping("/{id}/checkout")
     public ResponseEntity<?> getCheckoutInfo(@PathVariable Long id, Authentication authentication) {
 
@@ -60,14 +55,13 @@ public class CheckoutInfoController {
 
         // 2. 解析當前登入用戶的 ID
         String username = authentication.getName();
-        
+
         // 修正：使用 @Autowired 的實例變數 memberRepository
-        Long currentUserId = memberRepository.findIdByAccount(username); 
+        Long currentUserId = memberRepository.findIdByAccount(username);
 
         // ❗ 暫時加入日誌打印，確認解析出的 currentUserId ❗
         System.out.println("DEBUG: 當前登入的會員帳號: " + username);
         System.out.println("DEBUG: 當前登入的會員 ID: " + currentUserId);
-
 
         if (currentUserId == null) {
             throw new ResponseStatusException(
@@ -82,20 +76,30 @@ public class CheckoutInfoController {
 
         // 4. 業務邏輯檢查：驗證所有權 (解決 403 的核心)
         if (reservation.getUserId() == null || !reservation.getUserId().equals(currentUserId)) {
-            
+
             // ❗ 額外日誌用於 403 錯誤除錯 ❗
-            System.err.println("403 Forbidden: Reservation ID " + id + " 屬於用戶 " + reservation.getUserId() + 
-                               " 但當前用戶為 " + currentUserId);
-            
+            System.err.println("403 Forbidden: Reservation ID " + id + " 屬於用戶 " + reservation.getUserId() +
+                    " 但當前用戶為 " + currentUserId);
+
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN, "無權訪問此預約單 (預約單不屬於您)");
         }
         // --- 授權檢查 (End) ---
 
-
         // 5. 執行原本的數據獲取和計算邏輯
         ReservationCheckoutDto dto = new ReservationCheckoutDto();
         dto.setReservationId(reservation.getId());
+        List<ReservationItem> items = reservationItemRepository.findByReservationsId(id);
+
+        if (items != null && !items.isEmpty()) {
+            // 拿第一筆明細來找活動名稱即可
+            ReservationItem firstItem = items.get(0);
+            eventTicketTypeRepository.findById(firstItem.getEventTicketTypeId()).ifPresent(ett -> {
+                if (ett.getEvent() != null) {
+                    dto.setEventTitle(ett.getEvent().getTitle()); // 設置活動名稱
+                }
+            });
+        }
 
         // 補上使用者資訊
         if (reservation.getUserId() != null) {
@@ -111,7 +115,8 @@ public class CheckoutInfoController {
 
         // 撈明細並準備計算
         // 修正：使用 @Autowired 的實例變數 reservationItemRepository
-        List<ReservationItem> items = reservationItemRepository.findByReservationsId(id); 
+        // List<ReservationItem> items =
+        // reservationItemRepository.findByReservationsId(id);
 
         BigDecimal calculatedTotal = BigDecimal.ZERO; // 使用 BigDecimal.ZERO
 
@@ -119,20 +124,20 @@ public class CheckoutInfoController {
             for (ReservationItem item : items) {
                 // 查票名邏輯
                 String ticketName = "未知票種";
-                
+
                 // 1. 取得 EventTicketType 實體
                 EventTicketType ett = eventTicketTypeRepository.findById(item.getEventTicketTypeId()).orElse(null);
-                
+
                 if (ett != null) {
                     // 【修正處】：直接使用 ett.getTicketType() 獲取關聯的 TicketType 實體
-                    TicketType tt = ett.getTicketType(); 
-                    
+                    TicketType tt = ett.getTicketType();
+
                     // 2. 判斷是否成功獲取 TicketType
                     if (tt != null) {
                         ticketName = tt.getName();
                     }
                 }
-                
+
                 // 拿到單價跟數量，並累加總金額
                 BigDecimal unitPrice = item.getUnitPrice() != null ? item.getUnitPrice() : BigDecimal.ZERO;
                 BigDecimal quantity = new BigDecimal(item.getQuantity());
@@ -141,10 +146,9 @@ public class CheckoutInfoController {
                 calculatedTotal = calculatedTotal.add(unitPrice.multiply(quantity));
 
                 dto.getItems().add(new ReservationCheckoutDto.ItemDto(
-                    ticketName,
-                    unitPrice,
-                    item.getQuantity()
-                ));
+                        ticketName,
+                        unitPrice,
+                        item.getQuantity()));
             }
         }
 
