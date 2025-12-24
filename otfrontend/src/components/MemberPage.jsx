@@ -7,6 +7,7 @@ import "../Css/MemberPage.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 import CollectPage from "./CollectPage";
 import CheckoutOrder from "./CheckoutOrder";
+import Qrcode from "./Qrcode";
 
 function MemberPage() {
     // 每 5 分鐘檢查一次 token 是否過期
@@ -39,6 +40,7 @@ function MemberPage() {
                                 <Route path="revise/:field" element={<RevisePage />} />
                                 <Route path="wishList" element={<CollectPage />} />
                                 <Route path="checkoutOrders" element={<CheckoutOrder />} />
+                                <Route path="qrcode" element={<Qrcode />} />
                             </Routes>
                         </>
                     </div>
